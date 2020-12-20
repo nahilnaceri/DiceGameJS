@@ -15,6 +15,7 @@ let score1 = 0;
 const scores = [0, 0];
 let activePlayer = 0;
 let currentScore = 0;
+let playing = true;
 
 score0El.textContent = score0;
 score1El.textContent = score1;
@@ -33,17 +34,19 @@ function setUpImagesArray() {
 console.log(diceImages);
 
 function rollDice() {
-  const diceRollRandom = Math.floor(Math.random() * 6) + 1;
-  console.log(diceRollRandom);
-  diceImage[0].setAttribute('src', `dice-${diceRollRandom}.png`);
-  diceImage[0].classList.remove('hidden');
-  if (diceRollRandom !== 1) {
-    currentScore += diceRollRandom;
-    document.querySelector(
-      `#current--${activePlayer}`
-    ).textContent = currentScore;
-  } else {
-    switchPlayer();
+  if (playing) {
+    const diceRollRandom = Math.floor(Math.random() * 6) + 1;
+    console.log(diceRollRandom);
+    diceImage[0].setAttribute('src', `dice-${diceRollRandom}.png`);
+    diceImage[0].classList.remove('hidden');
+    if (diceRollRandom !== 1) {
+      currentScore += diceRollRandom;
+      document.querySelector(
+        `#current--${activePlayer}`
+      ).textContent = currentScore;
+    } else {
+      switchPlayer();
+    }
   }
 }
 
@@ -67,19 +70,30 @@ function switchPlayer() {
 }
 
 function holdPressed() {
-  if (activePlayer === 0) {
-    score0 += currentScore;
-    score0El.textContent = score0;
-    switchPlayer();
-  } else {
-    score1 += currentScore;
-    score1El.textContent = score1;
-
-    switchPlayer();
+  if (playing) {
+    if (activePlayer === 0) {
+      score0 += currentScore;
+      if (score0 >= 100) {
+        player1.classList.add('player--winner', 'name');
+        playing = false;
+      }
+      score0El.textContent = score0;
+      switchPlayer();
+    } else {
+      score1 += currentScore;
+      score1El.textContent = score1;
+      if (score1 >= 100) {
+        player2.classList.add('player--winner');
+        playing = false;
+      }
+      switchPlayer();
+    }
   }
 }
 
 function startNewGame() {
+  player1.classList.remove('player--winner');
+  player2.classList.remove('player--winner');
   if (activePlayer === 1) {
     player1.classList.add('player--active');
     player2.classList.remove('player--active');
@@ -92,4 +106,5 @@ function startNewGame() {
   score1El.textContent = score0;
   currentScore0El.textContent = currentScore;
   currentScore1El.textContent = currentScore;
+  playing = true;
 }
